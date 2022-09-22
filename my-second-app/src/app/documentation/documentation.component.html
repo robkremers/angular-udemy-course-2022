@@ -1,0 +1,99 @@
+<hr>
+<p>Documentation and explanation of implemented functionality</p>
+<label>Treatment of DataBinding</label><br>
+<!-- The method until setion 33: Event Binding. -->
+<!-- <input type="text" class="from-control" (input)="onUpdateServerName($event)"><br> -->
+<textarea name="Explanation" rows="20" cols="100">
+Overview:
+    TS ==> Output Data ==> HTML
+    - String Interpolation: ( { { data } } )
+    - Property Binding    : ( [property]="data" )
+    
+    TS <== React to (User) Events <== HTML
+    - Event Binding ( (event)="expression" )
+    
+    Combination of both: 
+    - Two-Way-Binding ( [(ngModel)]="data" )
+
+Examples:
+- String Interpolation (for the occasion I have added spaces between the curly braces):
+    - <p>serverCreationStatus = { { serverCreationStatus } }.</p>
+        The property 'serverCreationStatus' is given a value in servers.commponent.ts and it is changed there.
+
+In the button:
+- Property Binding:
+    -  [disabled]="!allowNewServer"
+        Via the parameter 'allowNewServer' that changes it's value after 2 seconds.
+        The change is defined in the constructor of class ServerComponents.
+        Note that the parameter 'allowNewServer' is recognized in the html! 
+        A parameter defined in the controller class will be available in the html.
+- Event Binding:
+    - (click)="onCreateServer()"
+        Via a method (could also have been a property) the underlying variable serverCreationStatus is changed.
+        This is shown in below under the button, using String Interpolation.
+        So now a change (input) in the web page causes a change in the underlying controller class.
+- Two-Way-Binding:
+    - <input type="text" class="from-control" [(ngModel)]="serverName">
+        - In the controller class the parameter 'serverName' is given an initial value: 
+            - serverName = 'TestServer';
+        - In the html page the value can be changed and thereby cause functionality execution in the controller class.
+
+Built in Directives:
+- https://angular.io/guide/built-in-directives#built-in-directives
+
+ngIf —conditionally creates or disposes of subviews from the template.
+Without the '*' it will not work correctly.
+- *ngIf="condition"
+- *ngIf="condition; else elseBlock"
+- *ngIf="condition; then thenBlock else elseBlock"
+
+Example (note: also an example of the use of 'ng-template'):
+<p *ngIf="serverCreated; else noServer">Server was created, serverName is { { serverName } }.</p>
+<ng-template #noServer>
+    <p>No server was created as yet!</p>
+</ng-template>
+
+- https://angular.io/guide/built-in-directives#ngstyle
+
+Apparently ngStyle does not need a '*' in advance in order to be functional.
+Instead it works using Property Binding.
+NgStyle —adds and removes a set of HTML styles.
+NgStyle will add a style attribute to the paragraph <p>; visibl in Developer Tools | Elements.
+
+- server.component.html
+  - <p [ngStyle]="{backgroundColor: getColor()}" >The Server Component with ID { { serverId } } has status { { getServerStatus() } }</p>
+    - Note that here Property Binding is used.
+- server.component.ts
+
+  getColor() {
+      return this.serverStatus === 'online' ? 'green' : 'red';
+  }
+
+- https://angular.io/guide/built-in-directives#ngClass
+
+ngClass will create a class attribute in the paragraph <p>
+The class attribute will be visible only in Development Tools | Elements if the condition is true.
+
+- server.component.css
+
+.online {
+    color: white;
+}
+
+- server.commponent.html
+
+<p 
+    [ngStyle]="{backgroundColor: getColor()}" 
+    [ngClass]="{online: serverStatus === 'online'}"
+    >The Server Component with ID { { serverId } } has status { { getServerStatus() } }</p>
+
+
+- sesrver.component.ts
+
+styleUrls: ['./server.component.css']
+
+constructor() {
+    this.serverStatus = Math.random() > 0.5 ? 'online' : 'ofline';
+}
+
+</textarea><br><br>

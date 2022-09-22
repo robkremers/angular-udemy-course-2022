@@ -1,0 +1,29 @@
+<hr>
+<h4>Assignment 2: Practicing Databinding by adding an input field for a username with a reset button.</h4>
+<p>Reminder: in case of a separate component for this task do not forget to add FormsModule to app.module.ts</p> 
+<div>
+    <ol>
+        <li>Add a Input field which updates a property ('username') via Two-Way-Binding</li>
+        <li>Output the username property via String Interpolation (in a paragraph below the input)</li>
+        <li>Add a button which may only be clicked if the username is NOT an empty string</li>
+        <li>Upon clicking the button, the username should be reset to an empty string</li>
+    </ol>
+
+    <div>
+        <input 
+            id="Username" 
+            name="Username" 
+            placeholder="Enter a username" 
+            type="text" 
+            class="from-control" [(ngModel)]="userName"
+        ><br>
+        <p>userName = {{ userName }}</p>
+        <button
+            class="btn btn-primary"
+            [disabled]="onCheckIsEmpty()"
+            (click)="onResetUsername()"
+            >Reset Username</button>
+
+        <p>Is userName empty: {{ isEmpty }}</p>
+    </div>
+</div>

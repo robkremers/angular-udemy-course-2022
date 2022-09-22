@@ -1,0 +1,41 @@
+<div class="container">
+  <!-- Event Binding: TS <== React to (User) Events <== HTML -->
+  <!-- 
+    1. Data is entered into <app-cockpit> via cockpit.component.html input fields 
+      and is sent to the parent compontent <app-component> via @Output().
+    2. Now the data enters (Event Binding) and is added in app.component.ts to array 'serverElements' via 
+        '(serverCreated)' or '(blueprintCreated)' defined in app.component.ts.
+    3. Via a loop over 'serverElements' the data enters <app-server-element via @Input().
+        Here in server-element.component.html a new panel with header and content is created.
+    
+    In the second attribute 'bpCreated' is an alias used in cockpit.component.ts.
+  -->
+  <app-cockpit 
+    (serverCreated)="onServerAdded($event)" 
+    (bpCreated)="onBlueprintAdded($event)"
+    ></app-cockpit>
+  <hr>
+  <div class="row">
+    <div class="col-xs-12">
+      <button class="btn btn-primary" (click)="onChangeFirst()">Change first Element</button>
+      <button class="btn btn-danger" (click)="onDestroyFirst()">Destroy first Component</button>
+      <!-- Property Binding: TS ==> Output Data ==> HTML -->
+      <app-server-element 
+        *ngFor="let serverElement of serverElements" 
+        [srvElement]="serverElement"
+        [name]="serverElement.name"
+        >
+        <!-- 
+          Again a Local Reference but now it will not be linked to the TS file app.component.ts 
+          but to the child-component TS server-element.component.ts.
+          There we need to use @ContentChild() instead of @ViewChild().
+          Also <app-server-element> can now be used more generically.
+        -->
+        <p #contentParagraph>
+          <strong *ngIf="serverElement.type === 'server'" style="color: red"> {{ serverElement.content }} </strong>
+          <em *ngIf="serverElement.type === 'blueprint'"> {{ serverElement.content }} </em>
+        </p>
+      </app-server-element>
+    </div>
+  </div>
+</div>

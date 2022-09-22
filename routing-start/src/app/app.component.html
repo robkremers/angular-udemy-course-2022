@@ -1,0 +1,72 @@
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+      <!-- 
+        See: paragraph 128 for details:
+        In setting the href to resp. /#, /servers, /users the tabs on the web pages can now be clicked
+        and the correct content is shown.
+        However: now the complete app will be reloaded, i.e. restarted.
+                  That means that the state of the application would be lost and it would slow down the performance.
+        
+        Instead routerlink is used. This directive is an Angular feature.
+        This attribute will catch the select, prevent starting the default, parses it and
+
+        routerLinkActive="active"
+        - routerLinkActive is an Angular directive.
+          - It analyses your currently loaded path and then checks which link leads to route which uses this path.
+          - By default it marks the element as 'active' on which you are.
+          - In the case below the empty path will be part of all paths and therefore will allways be marked active.
+        - active is a css feature.
+        - routerLinkActiveOptions="{exact: true}"
+          - Tells Angular: only add this routerLink active class if the exact path is true.
+            - This prevents 'Home' being marked as active too:
+              - { path: '', component: HomeComponent}
+              - { path: 'servers', component: ServersComponent}
+              -> Normally both '' and 'servers' are on the path leading to the route.
+                Sor both would be marked as active. {exact: true} prevents this.
+
+
+      -->
+      <ul class="nav nav-tabs">
+        <li 
+          role="presentation" 
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          ><a routerLink="/">Home</a></li>
+        <!-- <li role="presentation" ><a routerLink="/" routerLinkActive="active">Home</a></li> -->
+        <li 
+          role="presentation" 
+          routerLinkActive="active"
+          ><a routerLink="servers">Servers</a></li>
+        <!-- 
+          Property Binding was used before, but now we bind to non-string data!
+          Here we will use this and the input will be an array with one or more paths.
+          In this case one path.
+          This method will be useful in the later implementation.
+        -->
+        <li role="presentation" routerLinkActive="active"><a [routerLink]="['users']">Users</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+      <!-- 
+        127. Setting up and Loading Routes.
+
+        router-outlet is an Angular decorator. 
+        Ref: 
+        - https://angular.io/guide/router 
+        - https://angular.io/api/router/RouterOutlet
+        This will be the place where we will start the component of the currently selected router.
+        This element informs Angular to update the application view with the component for the selected route.
+
+        140. Setting up Child (Nested) Routes.
+        
+        THE <router-outlet> HERE IS RESERVED FOR THE TOP-LEVEL OF OUR ROUTES THAT HAVE NESTED ROUTES.
+        So nested routes need a separate <router-outlet> element at the appropriate place where they will be used.
+        In the case of servers: servers.component.html.
+      -->
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

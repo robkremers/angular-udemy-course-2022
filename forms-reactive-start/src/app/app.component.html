@@ -1,0 +1,95 @@
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+      <!-- 
+        205. Reactive: Submitting the form.
+
+          By adding [formGroup]="signupForm" (Property-Binding) to <form> the form is now connected with the form created in
+          app.component.ts.
+          formControlName="username" is okay if the purpose is to just pass a string from the ts to the html.
+
+        206. Reactive: Submitting the Form.
+
+          Now, when comparing with the Template-Driven approach we do not need to use a local reference to obtain
+          content from the form in the ts.
+          Since the form is created in the ts we already have access to it in the ts and this is no longer necessary.
+        
+        209. Reactive: Grouping Controls.
+
+          Nested FormGroups are possible.
+          In the following 'username' and 'email' are grouped in a nested FormGroup 'userData'.
+          This needs to be synchronized in ts and in html.
+
+      -->
+      <form [formGroup]="signupForm" (submit)="onSubmit()">
+        <div formGroupName="userData">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" formControlName="username" class="form-control">
+            <span 
+              *ngIf="!signupForm.get('userData.username').valid && signupForm.get('userData.username').touched" 
+              class="help-block">
+              <!-- 
+                213. Reactive: Using Error Codes.
+                The setup below is derived from the analysis via Developer Tool | Console of the web page / Angular settings.
+              -->
+              <span *ngIf="signupForm.get('userData.username').errors['nameIsForbidden']">This name is invalid!</span>
+              <span *ngIf="signupForm.get('userData.username').errors['required']">This field is required!</span>          
+            </span>
+          </div>
+          <div class="form-group">
+            <label for="email">email</label>
+            <input type="text" id="email" formControlName="email" class="form-control">
+            <span *ngIf="!signupForm.get('userData.email').valid && signupForm.get('userData.email').touched" class="help-block">
+              Please enter a valid mail address!
+            </span>
+          </div>
+        </div>
+        <div class="radio" *ngFor="let gender of genders">
+          <label>
+            <input type="radio" id="gender" formControlName="gender" [value]="gender">{{ gender }}
+          </label>
+        </div>
+        <!--
+          210. Fixing a bug.
+            Here I have used as an updated method:
+              *ngFor="let hobbyControl of getControls(); let i = index"
+            Alternatively, you can set up a getter and use an alternative type casting syntax:
+              getControls() {
+                return (this.signupForm.get('hobbies') as FormArray).controls;
+              }
+              and then in the template:
+
+              *ngFor="let hobbyControl of controls; let i = index"
+          
+          211. Reactive: Arrays of Form Controls (FormArray).
+            Allowing to dynamically add Form Controls.
+            ts and html need to be synchronized as shown below (and in ts).
+         -->
+         <hr>
+        <div formArrayName="hobbies">
+          <h4>Your Hobbies</h4>
+          <button 
+            class="btn btn-primary" 
+            type="button" 
+            (click)="onAddHobby()">Add Hobby</button>
+            <div 
+              class="form-group"
+              *ngFor="let hobbyControl of getControls(); let i = index">
+              <!-- Property Binding is needed because a local variable is passed. -->
+              <input type="text" class="form-control" [formControlName]="i">
+            </div>
+        </div>
+        <!--
+          208. Reactive: Getting Access to Controls.
+          Now no specific field name needs to be given as input.
+        -->
+        <span *ngIf="!signupForm.valid && signupForm.touched" class="help-block">
+          Please enter valid data!
+        </span>
+        <hr>
+        <button class="btn btn-primary" [disabled]="!signupForm.valid" type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>

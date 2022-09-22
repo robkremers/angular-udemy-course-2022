@@ -1,0 +1,260 @@
+import {Injectable} from "@angular/core";
+import {Router} from "@angular/router";
+import {Actions, Effect, ofType} from '@ngrx/effects';
+import {switchMap, catchError, map, tap} from 'rxjs/operators';
+import {of, throwError} from 'rxjs';
+import {HttpClient} from "@angular/common/http";
+
+import * as AuthActions from "./auth.actions";
+import {environment} from "../../../environments/environment";
+import {User} from "../user.model";
+
+export interface AuthResponseData {
+  idToken: string;
+  email: string;
+  refreshToken: string;
+  expiresIn: string;
+  localId: string;
+  registered?: boolean
+}
+
+const handleAuthentication = (
+  expiresIn: number,
+  email: string,
+  userId: string,
+  token: string
+) => {
+  const expirationDate = new Date(
+    new Date().getTime() + expiresIn * 1000
+  );
+  const user = new User(email, userId, token, expirationDate);
+  /**
+   * 305. Adding Auto-login.
+   * Adding this will store the user properties in the Local Storage once logged in.
+   * This will be visible in: Developer Tool | Application | Storage | Local Storage: http://localhost:<portnumber>
+   * localStorage is a JavaScript feature.
+   * - https://javascript.plainenglish.io/how-to-persist-state-with-localstorage-in-angular-42a4a47ed123
+   * And have a look at this:
+   * - https://www.rdegges.com/2018/please-stop-using-local-storage/
+   *
+   * 363. Dispatching Auth Actions.
+   * The localStorage should not be set in a reducer but is a local side-effect.
+   * It is not directly connected to the state and therefore it would be considered a bad practice to
+   * place it in the reducer.
+   * However only asynch code is forbidden to be placed in a reducer.
+   */
+  localStorage.setItem('userData', JSON.stringify(user));
+  return new AuthActions.AuthenticateSuccess({
+    email: email,
+    userId: userId,
+    token: token,
+    expirationDate: expirationDate
+  });
+};
+
+const handleError = (errorRes: any) => {
+  let errorMessage = 'An unknown error occurred!';
+  if (!errorRes.error || !errorRes.error.error) {
+    return of(new AuthActions.AuthenticateFail(errorMessage));
+  }
+  switch (errorRes.error.error.message) {
+    case 'EMAIL_EXISTS':
+      errorMessage = 'This email exists already';
+      break;
+    case 'EMAIL_NOT_FOUND':
+      errorMessage = 'This email does not exist';
+      break;
+    case 'INVALID_PASSWORD':
+      errorMessage = 'This password is not correct';
+      break;
+  }
+  /**
+   * Here a non-error Observable needs to be returned so that the overall Observable stream does not die.
+   * of() is used to create a new Observable by creating a new Action.
+   * For now an empty Observable will be returned. Will be filled in later.
+   * This part will now return something so the catchError() should be placed last.
+   * Otherwise other functionality would be executed.
+   */
+  return of(new AuthActions.AuthenticateFail(errorMessage));
+};
+
+/**
+ * 367. Defining the First Effect.
+ * 368. Effects & Error Handling.
+ * 369. Login via NgRx Effects.
+ * 371. Finishing the Login Effect.
+ * 372. Preparing Other Auth Actions.
+ *  Now add an Effect for signing up.
+ * 373. Adding SignUp.
+ * 375. Adding Auto-Login with NgRx.
+ * Handle the localStorage via auth.effects.ts.
+ *
+ * You organize the effects in classes.
+ * Actions here is an Observable that will give access to all dispatched actions to enable reacting to them.
+ * The reactions will be different from the ones in the reducer (in the reducer you will also get access to all actions).
+ * The idea with effects is that the state will not be changed but that it is possible to execute any other code
+ * that should happen when an action is dispatched.
+ *
+ * NgRx/effects will subscribe for you when using {Actions} from '@ngrx/effects'. Just call pipe().
+ * ofType() allows you to filter for which types of effects you want to continue for the Observable.
+ *
+ * Note:
+ * action$ indicates that the property is an Observable.
+ *
+ * @Injectable is necessary not to add it to the root, like a normal component, but to enable injecting into
+ * this class AuthEffects.
+ */
+@Injectable()
+export class AuthEffects {
+  /**
+   * The following url's are available in the firebase google reference:
+   * - https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+   * - https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+   */
+  private FirebaseAuthUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=';
+  private FirebaseSignInUrl = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=';
+  // The webApiKey value is available in the Settings of the Firebase Realtime Database.
+  private webApiKey = environment.firebaseApiKey;
+
+  // Declaration of effect handlers. They are Observables.
+
+  // @Effect()
+  // authSignup = this.actions$.pipe(
+  //   ofType(AuthActions.SIGNUP_START),
+  //   switchMap((signupAction: AuthActions.SignupStart) => {
+  //     return this.httpClient.post<AuthResponseData>(
+  //       this.FirebaseAuthUrl + this.webApiKey,
+  //       {
+  //         email: signupAction.payload.email,
+  //         password: signupAction.payload.password,
+  //         returnSecureToken: true
+  //       }
+  //     ).pipe(
+  //       /**
+  //        * Return an Observable that holds the login data.
+  //        */
+  //       map(responseData => {
+  //         return handleAuthentication(
+  //           +responseData.expiresIn,
+  //           responseData.email,
+  //           responseData.localId,
+  //           responseData.idToken)
+  //       }),
+  //       catchError(errorRes => {
+  //         return handleError(errorRes)
+  //       })
+  //     );
+  //   })
+  // );
+
+  /**
+   * Purpose: Yield specific information that is needed for logging in.
+   * An effect should by default return an Action once it's done.
+   * The decorator @Effect() is deprecated. See: https://ngrx.io/guide/migration/v11#the-effect-decorator
+   *
+   * An effect works slightly different from a function in a service.
+   * The following is an ongoing Observable stream. This stream must never die, at least not as long as our
+   * application is running.
+   * If we would catch an error here using catchError() in the pipe() after switchMap(), which is possible,
+   * the entire Observable stream would die and not be restarted again. So trying to log in again would not work
+   * because the effect would not be called again to execute AuthActions.LOGIN_START.\
+   * However we can use catchError in the inner Observable.
+   */
+  // @Effect()
+  // authLogin = this.actions$.pipe(
+  //   // Meaning: only continue of the Action is of type 'LOGIN_START'.
+  //   // Multiple actions can be added if the code should be executed for multiple actions.
+  //   ofType(AuthActions.LOGIN_START),
+  //   switchMap((authData: AuthActions.LoginStart) => {
+  //     return this.httpClient.post<AuthResponseData>(
+  //       this.FirebaseSignInUrl + this.webApiKey,
+  //       {
+  //         email: authData.payload.email,
+  //         password: authData.payload.password,
+  //         returnSecureToken: true
+  //       })
+  //       // here an inner Observable will be accessible.
+  //       .pipe(
+  //         /**
+  //          * Return an Observable that holds the login data.
+  //          */
+  //         map(responseData => {
+  //           return handleAuthentication(
+  //             +responseData.expiresIn,
+  //             responseData.email,
+  //             responseData.localId,
+  //             responseData.idToken)
+  //         }),
+  //         catchError(errorRes => {
+  //           return handleError(errorRes)
+  //         })
+  //       );
+  //   })
+  // );
+
+  // @Effect()
+  // autoLogin = this.actions$.pipe(
+  //   ofType(AuthActions.AUTO_LOGIN),
+  //   map(() => {
+  //     const userData: {
+  //       email: string;
+  //       id: string;
+  //       _token: string;
+  //       _tokenExpirationDate: string;
+  //     } = JSON.parse(localStorage.getItem('userData'));
+  //     if (!userData) {
+  //       // There is no data: the user (still) needs to log in.
+  //       return;
+  //     }
+  //     const loadedUser = new User(
+  //       userData.email,
+  //       userData.id,
+  //       userData._token,
+  //       new Date(userData._tokenExpirationDate)
+  //     );
+  //
+  //     // This functionality will be reached if logged in and thus the userData will be available.
+  //     if (loadedUser.token) {
+  //       return new AuthActions.AuthenticateSuccess({
+  //         email: loadedUser.email,
+  //         userId: loadedUser.id,
+  //         token: loadedUser.token,
+  //         expirationDate: new Date(userData._tokenExpirationDate)
+  //       }))
+  //       // const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+  //       // this.autoLogout(expirationDuration);
+  //     }
+  //   })
+  // );
+
+  /**
+   * 371. Finishing the Login Effect.
+   * Typically, an Effect returns an Observable which holds a new Effect that should be dispatched (via an Action).
+   * This Effect does not dispatch a new Action at the end. In order to let NgRx/effects know about that
+   * {dispatch: false } is added to the Decorator.
+   *
+   * 374. Further Auth Effects.
+   * Add AuthActions.LOGOUT.
+   */
+  @Effect({ dispatch: false })
+  authRedirect = this.actions$.pipe(
+    ofType(AuthActions.AUTHENTICATE_SUCCESS, AuthActions.LOGOUT),
+    tap(() => {
+      this.router.navigate(['/']);
+    })
+  );
+
+  @Effect({dispatch: false})
+  authLogout = this.actions$.pipe(
+    ofType(AuthActions.LOGOUT),
+    tap(() => {
+      localStorage.removeItem('userData');
+    })
+  );
+
+  constructor(
+    private actions$: Actions,
+    private http: HttpClient,
+    private router: Router
+  ) {}
+}

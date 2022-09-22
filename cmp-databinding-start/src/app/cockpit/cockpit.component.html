@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-xs-12">
+        <p>Cockpit: Add new Servers or blueprints!</p>
+        <label>Server Name</label>
+        <!-- Here Two-Way-Binding is used. -->
+        <!-- <input type="text" class="form-control" [(ngModel)]="newServerName"> -->
+        
+        <!-- paragraph 74. Example of the use of Local Reference in Templates.
+            Instead of Two-Way-Binding:
+            Local Reference:
+            - #serverNameInput
+                - Can only be used in the html-template: Here as an input parameter for "onAddServer(serverNameInput)"
+        -->
+        <input 
+            type="text" 
+            class="form-control" 
+            #serverNameInput>
+        <label>Server Content</label>
+        <!-- Here Two-Way-Binding is used. -->
+        <!-- <input type="text" class="form-control" [(ngModel)]="newServerContent"> -->
+
+        <!-- 
+            Paragraph 76. Getting Access to the Template & DOM with @ViewChild, connecting with #serverContentInput.
+            Again a Local Reference will be used, but now in the TS template it will be passed via a @ViewChild variable.
+        -->
+        <input 
+            type="text" 
+            class="form-control" 
+            #serverContentInput>
+
+        <br>
+        <button class="btn btn-primary" (click)="onAddServer(serverNameInput)">Add Server</button>
+        <button class="btn btn-primary" (click)="onAddBlueprint(serverNameInput)">Add Server Blueprint</button>
+    </div>
+</div>

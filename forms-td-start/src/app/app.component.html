@@ -1,0 +1,172 @@
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+      <!-- 
+        187. TD: Creating the Form and Registering the Controls.
+
+        Ensure that FormsModule is imported in app.module.ts.
+        - With this module present Angular will automatically create a Form representation if it detects a <form> element.
+        - Angular will not automatically detect your imports in this form. You still have to add this information.
+
+        188. TD: Submitting and Using the Form.
+        189.TD: Understanding Form State.
+        ngSubmit is an Angular directive that will be triggered by the submit button.
+        See addition explanation below.
+        Template Driven Development: every functionality is added to the Template.
+
+        #form="ngForm":
+        - A local reference.
+        - Tells Angular to give access to the form that has been created automactically by Angular.
+        - It can be passed to unsubmit(form) as a parameter.
+      -->
+      <!-- <form id="Angular-Submit-Form" name="Angular-Submit-Form" (ngSubmit)="onSubmit(form)" #form="ngForm"> -->
+      <!--
+        190. TD: Accessing the Form with @ViewChild.
+        This gives access to the DOM and the variables / attributes in the html-template.
+        Now the onSubmit() method does not have an input parameter anymore.
+        @ViewChild allows to access a local reference; in this case #form. 
+      -->
+      <form id="Angular-Submit-Form" name="Angular-Submit-Form" (ngSubmit)="onSubmit()" #form="ngForm">
+        <!--
+          197. TD: Grouping Form Controls.
+          This is done by using 'ngModelGroup'.
+          Below <div id="user-data" already contains the input-fields 'username' and 'email'.
+          With ngModelGroup="userData" these input-fields will now be formally grouped together.
+          Result:
+          In Developer Tool | Console: ngForm is now visible that form | value contains:
+          - userData: {username: 'rkremers', email: 'robkremers@hotmail.com'}.
+          Also in ngForm | controles we have a group:
+          - userData: with a lot of data controls.
+
+          In Developer Tool | Elements you see:
+          <div _ngcontent-sqs-c48="" id="user-data" ngmodelgroup="userData" with a lot of properties.
+          So this can be used for overview / control. 
+
+          You can access these properties and their values via a local reference property: #userData="ngModelGroup"
+        -->
+        <div id="user-data" ngModelGroup="userData" #userData="ngModelGroup">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <!-- 
+              187. TD: Creating the Form and Registering the Controls.
+              
+              Adding ngModel here tells Angular: this input is a control of my form. 
+              Whatever is entered as a value should be the value or name of that control.
+              For this the html attribute 'name' is used.
+
+              191. TD: Adding Validation to check User Input.
+              required is a valid HTML attribute.
+              Here Angular will detect it so it will act as a selector for a built in directive
+              shipping with Angular. It will automatically configure your form to take this
+              into account. The input will be treated as invalid if it is empty.
+
+              199. TD: Setting and Patching Form Values.
+              One way to add a suggested username to input field username via the button 'Suggest a Username'
+              would be Two-Way-Binding.
+              Here another way is shown.
+
+            -->
+            <input type="text" id="username" class="form-control" ngModel name="username" required>
+          </div>
+          <button class="btn btn-primary" type="button" (click)="suggestUserName()">
+            Suggest a Username
+          </button>
+          <div class="form-group">
+            <label for="email">Mail</label>
+            <!-- 
+              191. TD: Adding Validation to check User Input.
+              required: see above.
+              email: another Angular directive that ensures that the input is a valid address.
+              If the input content is incorrect in Developer Tool | Elements in ngForm the class ng-valid 
+              will be replaced by ng-invalid.
+
+              194. TD: Outputting Validation Error Messages.
+
+              A local reference #email is associated with ngModel.
+              ngModel also, like ngForm, exposes information about the control it creates for us.
+              The Form directive is automatically added by Angular when it detects a form element.
+              ngModel acts in the same way.
+              The <span> with the text shows an easy way to access control-edit by Angular.
+
+            -->
+            <input type="email" id="email" class="form-control" ngModel name="email" required email #email="ngModel">
+            <span class="help-block" *ngIf="!email.valid && email.touched">Please enter a valid value for the mail!</span>
+          </div>
+        </div>
+        <!-- 
+          197. TD: Grouping Form Controls.
+          Example of the use of formGroup properties access via local reference property: #userData.
+        -->
+        <p *ngIf="!userData.valid && userData.touched">User Data is invalid!</p>
+        <div class="form-group">
+          <label for="secret">Secret Questions</label>
+          <!-- 
+            195. TD: Set Default Values with ngModel Property Binding.
+            Property Binding:
+            [ngModel]="defaultQuestion" TS ==> Output Data ==> HTML
+            Now in the web page the default Secret Question is "Your first Pet?".
+          -->
+          <select id="secret" class="form-control" [ngModel]="defaultQuestion" name="secretQuestion">
+            <option value="pet">Your first Pet?</option>
+            <option value="teacher">Your first teacher?</option>
+          </select>
+        </div>
+        <!-- 
+          196. TD: Using ngModel with Two-Way-Binding.
+          [(ngModel)] is connected with the property 'answer' declared in app.component.ts.
+          The content of the textarea will be visible immediately in the paragraph 'Your reply:'.
+          When the button 'Submit' is clicked a snapshot of the content is taken and visible
+          in Development Tool | Console -> ngForm.
+          (but only once. Apparently the form needs to be told to submit again)
+        -->
+        <div class="form-group">
+          <textarea name="questionAnswer" rows="3" class="form-control" [(ngModel)]="answer"></textarea>
+        </div>
+        <p>Your reply: {{ answer }}</p>
+        <!--
+          198. TD: Handling Radio Buttons.
+
+          Below ngModel is added to make it a control.
+          Also used via Property Binding to set a standard value.
+          The attribute 'required' will ensure that the 'Submit' button will only be usable if a selection
+          is made.
+        -->
+        <div class="radio" *ngFor="let gender of genders">
+          <label>
+            <input type="radio" name="gender" [ngModel]="defaultGender" [value]="gender" required>
+            {{ gender }}
+          </label>
+        </div>
+        <!-- 
+          A button of type 'submmit' will trigger the default behavior of the form 
+          It will send a request normally.
+          Besides that it will also trigger a JavaScript event: the submit event.
+          This behaviour is built into HTML / JavaScript.
+
+          193. TD: Using the Form State.
+          In the form is defined: <form .. #form="ngForm">.
+            This 'form' attribute is now used in disabled]="form.valid".
+            The conntent is equal to what is visible in Developer Tool | Console -> ngForm.
+            Implementation below: if the form is not valid the "Submit" button should be disabled.
+            E.g. because required fields are not filled or the e-mail format is not correct.
+          
+        -->
+        <button class="btn btn-primary" type="submit" [disabled]="!form.valid">Submit</button>
+      </form>
+    </div>
+  </div>
+  <hr>
+  <!-- 
+    200. TD: Using Form Data.
+  -->
+  <div class="row" *ngIf="submitted">
+    <div class="col-xs-12">
+      <h3>Your Data</h3>
+      <p>Username: {{ user.username }}</p>
+      <p>Mail: {{ user.email }}</p>
+      <p>Secret Question: {{ user.secretQuestion }}</p>
+      <p>Answer: {{ user.answer }}</p>
+      <p>Gender: {{ user.gender }}</p>
+    </div>
+  </div>
+</div>

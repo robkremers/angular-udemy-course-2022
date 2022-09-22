@@ -1,0 +1,34 @@
+<hr>
+<p>Functionality of servers handling.</p>
+
+<!-- Two-Way-Databinding -->
+<input type="text" class="from-control" [(ngModel)]="serverName"><br><br>
+
+<button 
+    class="btn btn-primary" 
+    [disabled]="!allowNewServer"
+    (click)="onCreateServer()"
+    >Add Server</button>
+<!-- <p>{{ serverName }}</p> -->
+<p>String Interpolation also works: {{ allowNewServer }}</p>
+<!-- <p [innerText]="allowNewServer">Again Property Binding. With the Property binding this text is not visible on the web page.</p> -->
+
+<!-- With String interpolation I can add text below. -->
+<!-- <p>serverCreationStatus = {{ serverCreationStatus }}.</p> -->
+<!-- 
+    ngIf —conditionally creates or disposes of subviews from the template.
+    Without the '*' it will not work correctly.
+    - *ngIf="condition"
+    - *ngIf="condition; else elseBlock"
+    - *ngIf="condition; then thenBlock else elseBlock"
+-->
+<p *ngIf="serverCreated; else noServer">Server was created, serverName is {{ serverName }}.</p>
+<ng-template #noServer>
+    <p>No server was created as yet!</p>
+</ng-template>
+
+<hr>
+<!-- Note: servers is the servers array defined in controller class ServersComponent. -->
+<!-- <app-server></app-server>
+<app-server></app-server> -->
+<app-server *ngFor="let server of servers"></app-server>

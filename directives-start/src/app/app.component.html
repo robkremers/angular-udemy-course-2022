@@ -1,0 +1,116 @@
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <button class="btn btn-primary" (click)="onlyOdd = !onlyOdd">Only show odd numbers</button>
+      <br><br>
+      <ul class="list-group">
+        <!-- 
+          Just for the record: we do not need the index here. Just to show that index exists. See assignment three for it's use. 
+          Can't have multiple template bindings on one element. Use only one attribute prefixed with *
+        -->
+        <div *ngIf="onlyOdd">
+          <li 
+            class="list-group-item" 
+            [ngClass]="{odd: number % 2 !== 0}"
+            [ngStyle]="{backgroundColor: number % 2 !== 0 ? 'yellow' : 'transparent'}"
+            *ngFor="let number of oddNumbers; let i = index">
+            {{ number }}
+          </li>
+        </div>
+
+        <div *ngIf="!onlyOdd">
+          <li 
+            class="list-group-item" 
+            [ngClass]="{even: number % 2 === 0}"
+            [ngStyle]="{backgroundColor: number % 2 === 0 ? 'cyan' : 'transparent'}"
+            *ngFor="let number of evenNumbers; let i = index">
+            {{ number }}
+          </li>
+        </div>
+        <!-- 
+          100. What Happens behind the Scenes on Structural Directives.  
+          ng-temmplate is an element is itself not rendered but will be rendered, based on some condition.
+
+          In the following 'ngIf' is not preceded by a star, because it is the form to which it will be transformed
+          due to the star at the place where '*ngIf' is calling this functionality.
+
+          Under the hood this is what *ngIf actually does anyway.
+        -->
+        <!-- <ng-template [ngIf]="!onlyOdd">
+          <div>
+            <li 
+            class="list-group-item" 
+            [ngClass]="{even: number % 2 === 0}"
+            [ngStyle]="{backgroundColor: number % 2 === 0 ? 'cyan' : 'transparent'}"
+            *ngFor="let number of evenNumbers; let i = index">
+            {{ number }}
+          </li>            
+          </div>
+        </ng-template> -->
+        <div *appUnless="onlyOdd">
+          <li 
+            class="list-group-item" 
+            [ngClass]="{even: number % 2 === 0}"
+            [ngStyle]="{backgroundColor: number % 2 === 0 ? 'cyan' : 'transparent'}"
+            *ngFor="let number of evenNumbers; let i = index">
+            {{ number }}
+          </li>
+        </div>
+      </ul>
+      <!-- <ng-template [ngIf]="onlyOdd">
+        <p>Only odd</p>
+      </ng-template> -->
+      <!-- Adding this will show a text-line with green background color. -->
+      <p appBasicHighlight>Style me with basic directive!</p>
+      <p appBetterHighlight>Style me with a better directive!</p>
+      <p appEvenBetterHighlight>Style me with an even better directive using Renderer2! Only becomes blue if the mouse hovers over it.</p>
+      <!-- 
+        Angular will first look at custom Binding Properties before it will look at the standard properties of the paragraph <p>
+
+        In this example Property Binding is being used.
+
+        [defaultBackgroundColor]="'yellow'"
+
+        In this special case, with double-quotes and single-quotes you can also use:
+
+        defaultBackgroundColor="yellow"
+
+        Notice that appHostbindingBetterHighlight itself is not surrounded by square brackets and neither is it preceded by a '*'.
+        The @Input() parameters do have square brackets of course.
+      -->
+      <p appHostbindingBetterHighlight
+        defaultBackgroundColor="yellow"
+        [highlightBackgroundColor]="'orange'"
+        [defaultLetterColor]="'black'"
+        [highlightLetterColor]="'yellow'"
+        >Style me using HostBinding! Only becomes blue if the mouse hovers over it.</p>
+      <hr>
+      <p *appUnless="condition" class="unless a">
+        (A) This paragraph is displayed because the condition is false.
+      </p>
+      
+      <p *appUnless="!condition" class="unless b">
+        (B) Although the condition is true,
+        this paragraph is displayed because appUnless is set to false.
+      </p>
+      <hr>
+      <p>
+        The condition is currently
+        <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{condition}}</span>.
+        <button
+          (click)="condition = !condition"
+          [ngClass] = "{ 'a': condition, 'b': !condition }" >
+          Toggle condition to {{condition ? 'false' : 'true'}}
+        </button>
+      </p>
+      <p><button [ngClass]="['btn', 'btn-primary']">Button with ngClass</button></p>
+      <hr>
+      <div [ngSwitch]="value">
+        <p *ngSwitchCase="5">Value is 5</p>
+        <p *ngSwitchCase="10">Value is 10</p>
+        <p *ngSwitchCase="100">Value is 100</p>
+        <p>Value is default</p>
+      </div>
+    </div>
+  </div>
+</div>

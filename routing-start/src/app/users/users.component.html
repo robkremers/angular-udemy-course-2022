@@ -1,0 +1,38 @@
+<div class="row">
+  <div class="col-xs-12 col-sm-4">
+    <div class="list-group">
+      <!-- 
+          Apparently when using routerLink I do not need to use Property Binding. 
+          According to Marnix I only need to use Property Binding, in the case below
+          String Interpolation, if I want to show the value.
+          Otherwise I can just use the property, in this case user, as such.
+          Now we add the values dynamically instead of hard-coded.
+        -->
+      <a 
+        *ngFor="let user of users"
+        [routerLink]="['/users', user.id, user.name]" 
+        href="#" 
+        class="list-group-item" 
+        >
+        {{ user.name }}
+      </a>
+    </div>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <!--
+      127. Setting up and Loading Routes.
+
+      <router-outlet> 
+        This will be the place where we will start the component of the currently selected router.
+        This element informs Angular to update the application view with the component for the selected route.
+
+      140. Setting up Child (Nested) Routes.
+      Here all nested routes relative to the users route will be displayed (see declaration in app.module.ts).
+      Note that above is defined:
+      - [routerLink]="['/users', user.id, user.name]
+      - That points to (app.module.ts) the user-component. So that component will be loaded.
+    -->
+    <!-- <app-user></app-user> -->
+    <router-outlet></router-outlet>
+  </div>
+</div>

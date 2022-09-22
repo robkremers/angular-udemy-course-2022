@@ -1,0 +1,35 @@
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+
+      <form [formGroup]="projectForm" (submit)="onSubmit()">
+        <div class="form-group">
+          <label for="name">Project Name</label>
+          <input type="text" id="name" class="form-control" formControlName="projectName">
+          <!-- <span *ngIf="!projectForm.get('projectName').valid && projectForm.get('projectName').touched"
+            class="help-block">
+            <span *ngIf="projectForm.get('projectName').errors['sync: invalidProjectName']">This name is invalid: sync:
+              invalidProjectName!</span>
+            <span *ngIf="projectForm.get('projectName').errors['async: invalidProjectName']">This name is invalid:
+              async: invalidProjectName!</span>
+            <span *ngIf="projectForm.get('projectName').errors['required']">This field is required!</span>
+          </span> -->
+        </div>
+        <div class="form-group">
+          <label for="email">Mail</label>
+          <input type="email" id="email" class="form-control" formControlName="email">
+        </div>
+        <div class="form-group">
+          <label for="status">ProjectStatus</label>
+          <select name="status" id="status" class="form-control" formControlName="projectStatus">
+            <option *ngFor="let projectStatus of projectStatusWaarden" [value]="projectStatus">
+              {{ projectStatus }}
+            </option>
+          </select>
+        </div>
+        <!-- disabled]="!projectForm.valid" -->
+        <button class="btn btn-primary" [disabled]="!projectForm.valid" type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>

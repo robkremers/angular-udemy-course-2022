@@ -1,0 +1,14 @@
+<a href="#" class="list-group-item clearfix" (click)="onselect()">
+    <div class="pull-left">
+        <h4 class="list-group-item-heading">{{ recipeIn.name }}</h4>
+        <p class="list-group-item-text">{{ recipeIn.description }}</p>
+    </div>
+    <span class="pull-right">
+        <!-- 
+            Both String Interpolation and Property Binding are correct.  
+            The course leader chose to use Property Binding for src. For alt String Interpolation is used.
+        -->
+        <img [src]="recipeIn.imagePath" alt="{{ recipeIn.description }}" class="img-responsive"
+            style="max-height:50px;">
+    </span>
+</a>

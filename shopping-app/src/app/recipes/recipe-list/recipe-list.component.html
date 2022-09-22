@@ -1,0 +1,21 @@
+<div class="row">
+    <div class=col-xs-12>
+        <button class="btn btn-success">New Recipe</button>
+    </div>
+</div><br>
+<div class="row">
+    <!-- 
+        The recipes are received from this component recipe-list.component.ts.
+        The recipes are hard-coded.
+        Binding to custom properties (@Input()) is used in recipe-item.component.
+
+        Property Binding is used to send the data to recipe-item.ts: 
+        @Input() recipe: Recipe;
+    -->
+    <div class="col-xs-12">
+        <app-recipe-item 
+        *ngFor="let recipeElement of recipes"
+        [recipeIn]="recipeElement"
+        ></app-recipe-item>
+    </div>
+</div>

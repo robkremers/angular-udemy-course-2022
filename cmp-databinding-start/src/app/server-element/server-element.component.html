@@ -1,0 +1,20 @@
+<div class="panel panel-default">
+    <!-- <div class="panel-heading">{{ element.name }}</div> -->
+    <!-- 
+        Paragraph 76. Getting Access to the Template & DOM with @ViewChild, connecting with #serverContentInput.
+        Again a Local Reference will be used, but now in the TS template it will be passed via a @ViewChild variable.
+    -->
+    <div class="panel-heading" #heading >{{ name }}</div>
+    <div class="panel-body">
+        <!-- 
+            Paragraph 77: Projecting Content into Components with ng-content.
+            - ng-content will receive the content from a parent component: app.component.
+                <p>
+                    <strong *ngIf="serverElement.type === 'server'" style="color: red"> {{ serverElement.content }} </strong>
+                    <em *ngIf="serverElement.type === 'blueprint'"> {{ serverElement.content }} </em>
+                </p>
+                This paragraph is placed in app.component.html between <app-server-element></app-server-element>
+        -->
+        <ng-content></ng-content>
+    </div>
+</div>

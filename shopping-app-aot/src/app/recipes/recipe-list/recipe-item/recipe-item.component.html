@@ -1,0 +1,19 @@
+<!-- 
+    The value for index is received from recipe-list.component.html: [index]="i" 
+    This value is passed to recipe-item.component.ts: '@Input() index: number;' 
+    and therefore can be used in this html page.
+-->
+<a 
+    style="cursor: pointer" 
+    [routerLink]="[index]"
+    routerLinkActive="active"
+    class="list-group-item clearfix">
+    <div class="pull-left">
+        <h4 class="list-group-item-heading">{{ recipeIn.name }}</h4>
+        <p class="list-group-item-text">{{ recipeIn.description }}</p>
+    </div>
+    <span class="pull-right">
+        <img [src]="recipeIn.imagePath" alt="{{ recipeIn.description }}" class="img-responsive"
+            style="max-height:50px;">
+    </span>
+</a>

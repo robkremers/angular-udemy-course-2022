@@ -1,0 +1,26 @@
+<h4>The Shopping List</h4>
+<div class="row">
+    <div class="col-xs-10">
+        <app-shopping-edit></app-shopping-edit>
+        <hr>
+        <p>The Shopping List</p>
+        <!--
+            221. Allowing the Selection of Items in the List.
+            Here An item in the shopping list can be clicked.
+            The index of the item will be sent to the shopping-list.service.
+
+            222. Loading the Shopping List items into the Form.
+            Next the shopping-edit component, which is subscribed to this information, will receive the shopping list item to be edited.
+        -->
+        <ul class="list-group">
+            <a 
+                class="list-group-item" 
+                style="cursor:pointer" 
+                *ngFor="let ingredient of ingredients; let i = index"
+                (click)="onEditItem(i)"
+            >
+                {{ ingredient.name }} ({{ ingredient.amount }})
+            </a>
+        </ul>
+    </div>
+</div>

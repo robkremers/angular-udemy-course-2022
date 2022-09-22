@@ -1,0 +1,24 @@
+<h4>The Recipe List and Recipe Details</h4>
+<div class="row">
+    <div class="col-md-5">
+        <!-- 
+            First Data Binding was used.
+            One way to do this. However in general put as little functionality as possible in your html template. 
+            Now Cross-Component Communication is being used.
+        -->
+        <app-recipe-list></app-recipe-list>
+    </div>
+    <!-- 
+        In <app-recipe-detail> the details of a recipe chosen in <app-recipe-list> will be shown.
+        If no recipe has as yet been chosen the text "Please select a Recipe" will be shown.
+        Otherwise the recipe-details will be presented.
+    -->
+    <div class="col-md-7">
+        <app-recipe-detail 
+            *ngIf="selectedRecipe; else infoText"
+            [recipe]="selectedRecipe"></app-recipe-detail>
+        <ng-template #infoText>
+            <p>Please select a Recipe</p>
+        </ng-template>
+    </div>
+</div>

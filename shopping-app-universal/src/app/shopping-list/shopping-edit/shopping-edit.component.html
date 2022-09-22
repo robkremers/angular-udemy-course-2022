@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="col-xs-12">
+        <!-- 
+            ngModel is added to the input fields in order to register it as a control in our Template Driven form.
+            Since the input of inputfield amount is a string:
+            Instead of [pattern]="'^[1-9]+[0-9]*$'" can be used: pattern="^[1-9]+[0-9]*$"
+            This regex will allow any number > 0.
+
+            222. Loading the Shopping List items into the Form.
+            #form="ngForm" will be used to access the Form.
+
+            223. Updating existing Items.
+            The submit button should be called 'Update' if in the edit mode. Otherwise it should be called 'Add'.
+        -->
+        <form (ngSubmit)="onSubmit(form)" #form="ngForm">
+            <div *ngIf="editMode">
+                <p>Editing shopping item</p>
+            </div>
+            <div class="row">
+                <div class="col-sm-5 form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" class="form-control" name="name" ngModel required>
+                </div>
+                <div class="col-sm-2 form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" class="form-control" name="amount" ngModel required pattern="^[1-9]+[0-9]*$">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <button 
+                        class="btn btn-success" 
+                        type="submit" 
+                        [disabled]="!form.valid">{{ editMode ? 'Update' : 'Add'}}</button>
+
+                    <!-- 
+                        226. Allowing the Deletion of Shopping List Items.
+                        The Delete button should only be accessible when in the edit mode.
+                    -->
+                    <button class="btn btn-danger" type="button" (click)="onDelete()" *ngIf="editMode">Delete</button>
+                    <!-- 225. Allowing the User to Clear (Cancel) the Form. -->
+                    <button class="btn btn-primary" type="button" (click)="onClear()">Clear</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

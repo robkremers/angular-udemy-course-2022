@@ -1,0 +1,10 @@
+<app-header (chosenItem)="onItemChosen($event)"></app-header>
+<div  class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <app-recipes *ngIf="chosenItem === 'recipes'"></app-recipes>
+      <hr>
+      <app-shopping-list *ngIf="chosenItem == 'shopping-list'"></app-shopping-list>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-4">
+      <div class="list-group">
+        <!-- 
+          queryParams is another part of the routerLink directive.
+          Setting [queryParams]="{allowEdit:'1', allowTest: '2'}"
+          will result in url when selecting a server: http://localhost:4206/servers/1/edit?allowEdit=1&allowTest=2
+          You may only have one fragment.
+          [fragment]="'loading'" can be replaced by fragment="loading"
+
+          139. Practicing and some Common Gotchas.
+          Now the intention is to load here the server component and not anymore the edit-server-component.
+
+          141. Using Query Parameters - Practice.
+
+          The intention is to limit the possibility to edit a server:
+          [queryParams]="{allowEdit: server.id === 3? '1' : 0}"
+
+        -->
+        <a
+          [routerLink]="['/servers', server.id]"
+          [queryParams]="{allowEdit: server.id === 3? '1' : '0'}"
+          [fragment]="'loading'"
+          href="#"
+          class="list-group-item"
+          *ngFor="let server of servers">
+          {{ server.name }}
+        </a>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-4">
+      <!-- 
+        140. Setting up Child (Nested) Routes.
+        When using nested routes are used: see explanation in app.component.html:
+        - At the point where the nested routes will be used a new hook <router-outlet> needs to be placed.
+          - Here servers-related nested routes, so relative to servers (see routes declaration) will be displayed.
+          - Note that above is defined:
+            - [routerLink]="['/servers', server.id]"
+            - That points to (app-routing.module.ts) the server-component. So that component will be loaded.
+      -->
+      <router-outlet></router-outlet>
+
+      <!-- <button class="btn btn-primary" (click)="onReload()">Reload Page</button>
+      <app-edit-server></app-edit-server>
+      <hr>
+      <app-server></app-server>
+    </div> -->
+  </div>
+  
+  

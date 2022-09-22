@@ -1,0 +1,65 @@
+<div class="container">
+  <div class="row">
+    <!--
+      filter Pipe:
+      - filteredStatus: will hold the string for which will be filtered.
+      - 'status': server.status
+
+    -->
+    <div class="col-xs-30 col-sm-offset-1 col-md-offset-2">
+      <div class="form-group" class="col-xs-4">
+        <label for="filter">Filter</label>
+        <input id="filter" name="filter" type="text" class="form-control" [(ngModel)]="filteredStatus">
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+      <button class="btn btn-primary" (click)="onAddServer()">Add Server</button>
+      <br><br>
+      <p>App Status: {{ appStatus | async }}</p>
+      <hr>
+      <ul class="list-group">
+        <li class="list-group-item" *ngFor="let server of servers | filter: filteredStatus: 'status' | sortList: 'name'" [ngClass]="getStatusClasses(server)">
+          <span class="badge">
+            {{ server.status }}
+          </span>
+          <!-- 
+            245. Chaining Multiple Pipes.
+
+            Various examples:
+            Chaining: server.started | date | uppercase.
+
+            Should be done in the right order: 
+            - a date field, like server.started can not be changed by Pipe 'uppercase'.
+              Instead server.started shoud first be changed into a string with the right format, 
+              after which the string can be handled.
+            
+            246. Creating a Custom Pipe.
+            Added the custom pipe 'shorten'.
+
+            247. Parameterizing a Custom Pipe.
+
+          -->
+          <strong>{{ server.name | shorten: 15 }}</strong> | 
+          {{ server.instanceType | uppercase }} | 
+          {{ server.started | date: 'shortDate' }} |
+          {{ server.started | date | uppercase }} |
+          {{ server.started | date: 'yyyy-MM-dd, EEEE' }} |
+          <!-- {{ server.started | date: 'fullDate' | uppercase}} -->
+        </li>
+      </ul>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col-cs-12">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <p>Super power boost: {{ 2 | exponentialStrength }}</p>
+        </li>
+        <li class="list-group-item">
+          <p>Super power boost: {{ 2 | exponentialStrength: 10 }}</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
