@@ -15636,8 +15636,6 @@ git remote add origin https://github.com/robkremers/angular-crash.git
 git branch -M main
 git push -u origin main
 
-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
-
 
 ===================================================================================================
 2022-09-08:
